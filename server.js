@@ -7,7 +7,22 @@ const app = express()
 // use libraries to get data from the front-end
 app.use(cors())
 
-/** get the user data from the front-end after the user finds all of the objects */
+function base64URLEncode(str) {
+    return str.toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+}
+
+const verifier = base64URLEncode(crypto.randomBytes(32));
+
+function sha256(buffer) {
+    return crypto.createHash('sha256').update(buffer).digest();
+}
+
+const challenge = base64URLEncode(sha256(verifier));
+
+/** get the user data from the front-end */
 app.post('/api/auth/', (req, res) => {
     const { username, password } = req.body.userData
   
